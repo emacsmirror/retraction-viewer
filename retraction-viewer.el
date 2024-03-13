@@ -25,7 +25,7 @@
 
 ;;; Commentary:
 ;;
-;; This emacs package provides a way to show retraction information
+;; This Emacs package provides a way to show retraction information
 ;; for citations and citation data at point.  This is done using the
 ;; Crossref REST API
 ;; (https://www.crossref.org/documentation/retrieve-metadata/rest-api/)

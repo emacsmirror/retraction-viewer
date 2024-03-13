@@ -3,7 +3,7 @@
 
 # Retraction Viewer
 
-This emacs package provides a way to show retraction information for citations and citation data at point.
+This Emacs package provides a way to show retraction information for citations and citation data at point.
 This is done using the [Crossref REST API](https://www.crossref.org/documentation/retrieve-metadata/rest-api/) (experimental version until the feature is available on the regular version).
 At the moment, it explicitly supports detection of DOI from [ebib](http://joostkremers.github.io/ebib/) as well as `bibtex-mode`.
 
