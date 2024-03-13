@@ -80,6 +80,7 @@ Note, `retraction-viewer-crossref-email' must be set."
       (when-let* ((url (retraction-viewer--format-url doi))
                   (data (plz 'get url :as #'json-read))
                   (message (alist-get 'message data))
+                  ;; TODO: Save and add title as well?
                   (updates (cl-map 'list #'identity (alist-get 'cr-labs-updates message)))
                   (retraction-messages (cl-remove-if-not (lambda (entry)
                                                            (when-let* ((about (alist-get 'about entry))
@@ -109,6 +110,19 @@ Note, `retraction-viewer-crossref-email' must be set."
   "Get DOI from current BibTeX entry."
   (when (derived-mode-p 'bibtex-mode)
     (bibtex-text-in-field "doi")))
+
+;; TODO: Get based on current citation in LaTeX?
+
+;; TODO: Get based on current citation in Org Mode?
+
+
+;;; Display Methods
+
+;; TODO: Implement eldoc provider
+
+;; TODO: Implement sidecar
+
+;; TODO: Other ways to display?
 
 (provide 'retraction-viewer)
 
