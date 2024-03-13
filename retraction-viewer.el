@@ -203,26 +203,29 @@ For available keys, see `retraction-viewer-format-spec'."
 (with-eval-after-load 'universal-sidecar
 
   (defcustom retraction-viewer-sidecar-modes '(bibtex-mode ebib-entry-mode ebib-index-mode)
-    "Which modes should the retraction viewer section be enabled in."
+    "Which modes should the retraction viewer section be enabled in?"
     :type '(repeat (function :tag "Mode"))
     :group 'universal-sidecar
     :group 'retraction-viewer)
 
-  (universal-sidecar-define-section retraction-viewer-section ()
+  (universal-sidecar-define-section retraction-viewer-section ((format-string retraction-viewer-notice-format)
+                                                               (prepend-bullet ?-))
                                     (:predicate (apply #'derived-mode-p retraction-viewer-sidecar-modes))
-    "Show retraction status of the current bibliographic item."
+    "Show retraction status of the current bibliographic item.
+
+The bullet prepended to each notice message is specified by
+PREPEND-BULLET (default -), and the retraction notice format can
+be overridden by specifying FORMAT-STRING."
     (when-let ((doi (with-current-buffer buffer (retraction-viewer-current-doi)))
-               (retraction-data (retraction-viewer-doi-status doi)))
+               (retraction-data (retraction-viewer-doi-status doi))
+               (prefix (format " %c " prepend-bullet))
+               (format-string (if (string-prefix-p prefix format-string)
+                                  format-string
+                                (concat prefix format-string))))
       (universal-sidecar-insert-section retraction-viewer-section (format "Retraction Notice for %s:" doi)
         (insert (universal-sidecar-fontify-as org-mode ((org-fold-core-style 'overlays))
                   (mapconcat (lambda (entry)
-                               (let-alist entry
-                                 (format " - %s (%s): %s (see also [[%s][%s]])"
-                                         .update-nature
-                                         .update-date
-                                         (mapconcat #'identity .reasons ", ")
-                                         .target-doi
-                                         (substring .target-doi 16))))
+                               (retraction-viewer-format-notice entry format-string))
                              retraction-data
                              "\n")))))))
 
