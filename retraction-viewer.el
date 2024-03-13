@@ -300,8 +300,6 @@ be overridden by specifying FORMAT-STRING."
                              retraction-data
                              "\n")))))))
 
-;; TODO: Other ways to display?
-
 (provide 'retraction-viewer)
 
 ;;; retraction-viewer.el ends here
