@@ -25,6 +25,6 @@ TODO
 
 TODO
 
-`retraction-viewer-get-current-doi`
+`retraction-viewer-current-doi`
 
 `retraction-viewer-doi-status`
