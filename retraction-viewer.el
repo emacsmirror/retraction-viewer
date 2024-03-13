@@ -74,7 +74,10 @@ Note, `retraction-viewer-crossref-email' must be set."
   (make-hash-table :test 'retraction-watch-string=)
   "Cached results for retraction viewer.")
 
-(defun retraction-viewer--get-retraction-status (doi)
+
+;;; Get DOI Retraction Status
+
+(defun retraction-viewer-doi-status (doi)
   "Get the retraction status of DOI."
   (or (gethash doi retraction-viewer--cached-retraction-status)
       (when-let* ((url (retraction-viewer--format-url doi))
