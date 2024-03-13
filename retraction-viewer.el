@@ -27,6 +27,34 @@
 ;; TODO
 
 ;;; Code:
+(require 'plz)
+
+
+;;; Customization
+
+(defgroup retraction-viewer nil
+  "Customization of retraction-viewer."
+  :group 'bibtex
+  :prefix "retraction-viewer-"
+  :link '(url-link :tag "Sourcehut" "https://git.sr.ht/~swflint/retraction-viewer")
+  :link '(emacs-library-link :tag "Library Source" "retraction-viewer.el"))
+
+(defcustom retraction-viewer-crossref-email nil
+  "Email to use for authentication to crossref API."
+  :group 'retraction-viewer
+  :type '(choice (string :tag "Email:")
+                 (const :tag "Authentication Disabled (warning will be issued)" nil)))
+
+
+;;; Utility Functions
+
+(defun retraction-viewer--format-url (doi)
+  "TODO DOI."
+  (if (null retraction-viewer-crossref-email)
+      (display-warning 'retraction-viewer "Please set `retraction-viewer-crossref-email' to a string value" :error)
+    (format-spec "https://api.labs.crossref.org/works/%d?mailto=%m"
+                 `((?d . ,doi)
+                   (?m . ,retraction-viewer-crossref-email)))))
 
 
 
