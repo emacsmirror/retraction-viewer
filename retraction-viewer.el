@@ -54,6 +54,31 @@ This is a list of functions, run until one returns non-nil."
   :group 'retraction-viewer
   :type 'hook)
 
+(defcustom retraction-viewer-format-spec
+  '((?n . retraction-viewer--format-update-nature)
+    (?d . retraction-viewer--format-update-date)
+    (?r . retraction-viewer--format-reasons)
+    (?u . retraction-viewer--format-target-doi)
+    (?D . retraction-viewer--format-doi)
+    (?U . retraction-viewer--format-urls)
+    (?N . retraction-viewer--format-notes)
+    (?a . retraction-viewer--format-asserted-by))
+  "Metacharacters for formatting retraction notices.
+
+Keys should be unique characters, and values should be either
+references to variables or named functions which take a single
+argument, the retraction notice data structure (alist)."
+  :group 'retraction-viewer
+  :type '(alist :key-type (character :tag "Format Character")
+                :value-type (sexp :tag "Getter")))
+
+(defcustom retraction-viewer-notice-format "%n (%d): %r (see also [[%u][%D]])."
+  "Default format for retraction notices.
+
+See also `retraction-viewer-format-spec' for available keys."
+  :group 'retraction-viewer
+  :type 'string)
+
 
 ;;; Utility Functions
 
@@ -117,6 +142,58 @@ Note, `retraction-viewer-crossref-email' must be set."
 ;; TODO: Get based on current citation in LaTeX?
 
 ;; TODO: Get based on current citation in Org Mode?
+
+
+;;; Formatting Retraction Notices
+
+(defun retraction-viewer--format-update-nature (notice)
+  "Get update-nature from NOTICE."
+  (alist-get 'update-nature notice))
+
+(defun retraction-viewer--format-update-date (notice)
+  "Get update-date from NOTICE."
+  (alist-get 'update-date notice))
+
+(defun retraction-viewer--format-target-doi (notice)
+  "Get target-doi from NOTICE."
+  (alist-get 'target-doi notice))
+
+(defun retraction-viewer--format-notes (notice)
+  "Get notes from NOTICE."
+  (alist-get 'notes notice))
+
+(defun retraction-viewer--format-asserted-by (notice)
+  "Get asserted-by from NOTICE."
+  (alist-get 'asserted-by notice))
+
+(defun retraction-viewer--format-reasons (notice)
+  "Get reasons from NOTICE."
+  (mapconcat #'identity (alist-get 'reasons notice) ", "))
+
+(defun retraction-viewer--format-urls (notice)
+  "Get urls from NOTICE."
+  (mapconcat #'identity (alist-get 'urls notice) ", "))
+
+(defun retraction-viewer--format-doi (notice)
+  "Get DOI from NOTICE."
+  (substring (alist-get 'target-doi notice) 16))
+
+(defun retraction-viewer-format-notice (notice &optional format)
+  "Format retraction NOTICE data based on FORMAT.
+
+Use `retraction-viewer-notice-format' if FORMAT is nil.
+
+For available keys, see `retraction-viewer-format-spec'."
+  (let* ((format (or format retraction-viewer-notice-format))
+         (format-specs (mapcar (lambda (spec)
+                                 (cons (car spec)
+                                       (if (fboundp (cdr spec))
+                                           (apply (cdr spec) notice)
+                                         (symbol-value (cdr spec)))))
+                               (cl-remove-if-not (lambda (spec)
+                                                   (string-match-p (format "%%%c" (car spec)) format))
+                                                 retraction-viewer-format-spec))))
+    (format-spec format format-specs)))
 
 
 ;;; Display Methods

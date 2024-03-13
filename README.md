@@ -28,3 +28,5 @@ TODO
 `retraction-viewer-current-doi`
 
 `retraction-viewer-doi-status`
+
+`retraction-viewer-format-notice`
