@@ -188,7 +188,7 @@ For available keys, see `retraction-viewer-format-spec'."
          (format-specs (mapcar (lambda (spec)
                                  (cons (car spec)
                                        (if (fboundp (cdr spec))
-                                           (apply (cdr spec) notice)
+                                           (funcall (cdr spec) notice)
                                          (symbol-value (cdr spec)))))
                                (cl-remove-if-not (lambda (spec)
                                                    (string-match-p (format "%%%c" (car spec)) format))
