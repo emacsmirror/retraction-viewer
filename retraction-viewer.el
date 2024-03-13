@@ -46,6 +46,14 @@
   :type '(choice (string :tag "Email:")
                  (const :tag "Authentication Disabled (warning will be issued)" nil)))
 
+(defcustom retraction-viewer-doi-functions (list #'retraction-viewer-get-ebib-doi
+                                                 #'retraction-viewer-get-bibtex-doi)
+  "How should a DOI be gotten?
+
+This is a list of functions, run until one returns non-nil."
+  :group 'retraction-viewer
+  :type 'hook)
+
 
 ;;; Utility Functions
 
@@ -81,6 +89,26 @@ Note, `retraction-viewer-crossref-email' must be set."
         (puthash doi retraction-messages
                  retraction-viewer--cached-retraction-status))))
 
+
+;;; Get current DOI
+
+(defun retraction-viewer-get-current-doi ()
+  "Get the current DOI, using `retraction-viewer-doi-functions'."
+  (run-hook-with-args-until-success 'retraction-viewer-doi-functions))
+
+(declare-function ebib-get-field-value "ebib-utils.el")
+(declare-function ebib--get-key-at-point "ebib.el")
+(defvar ebib--cur-db)
+(defun retraction-viewer-get-ebib-doi ()
+  "Get DOI from current Ebib entry."
+  (when (and (featurep 'ebib)
+             (derived-mode-p 'ebib-entry-mode 'ebib-index-mode))
+    (ebib-get-field-value "doi" (ebib--get-key-at-point) ebib--cur-db 'noerror 'unbraced)))
+
+(defun retraction-viewer-get-bibtex-doi ()
+  "Get DOI from current BibTeX entry."
+  (when (derived-mode-p 'bibtex-mode)
+    (bibtex-text-in-field "doi")))
 
 (provide 'retraction-viewer)
 
