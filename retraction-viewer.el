@@ -213,6 +213,8 @@ For available keys, see `retraction-viewer-format-spec'."
 ;;; Display Methods
 
 ;; TODO: Implement eldoc provider
+;; add retraction-viewer-eldoc-function to eldoc-documentation-functions buffer-local
+;; Implement a mode?
 
 (with-eval-after-load 'universal-sidecar
 
