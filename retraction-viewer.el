@@ -56,6 +56,18 @@
                  `((?d . ,doi)
                    (?m . ,retraction-viewer-crossref-email)))))
 
+(defun retraction-viewer--get-retraction-status (doi)
+  "TODO"
+  (when-let* ((url (retraction-viewer--format-url doi))
+              (data (plz 'get url :as #'json-read))
+              (message (alist-get 'message data))
+              (updates (cl-map 'list #'identity (alist-get 'cr-labs-updates message)))
+              (retraction-messages (cl-remove-if-not (lambda (entry)
+                                                       (when-let* ((about (alist-get 'about entry))
+                                                                   (source-url (alist-get 'source_url about)))
+                                                         (string= "https://retractionwatch.com" source-url)))
+                                                     updates)))
+    retraction-messages))
 
 
 (provide 'retraction-viewer)
