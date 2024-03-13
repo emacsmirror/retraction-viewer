@@ -56,18 +56,27 @@
                  `((?d . ,doi)
                    (?m . ,retraction-viewer-crossref-email)))))
 
+(define-hash-table-test 'retraction-watch-string=
+                        'string= 'sxhash-equal)
+
+(defvar retraction-viewer--cached-retraction-status
+  (make-hash-table :test 'retraction-watch-string=)
+  "Cached results for retraction viewer.")
+
 (defun retraction-viewer--get-retraction-status (doi)
   "TODO"
-  (when-let* ((url (retraction-viewer--format-url doi))
-              (data (plz 'get url :as #'json-read))
-              (message (alist-get 'message data))
-              (updates (cl-map 'list #'identity (alist-get 'cr-labs-updates message)))
-              (retraction-messages (cl-remove-if-not (lambda (entry)
-                                                       (when-let* ((about (alist-get 'about entry))
-                                                                   (source-url (alist-get 'source_url about)))
-                                                         (string= "https://retractionwatch.com" source-url)))
-                                                     updates)))
-    retraction-messages))
+  (or (gethash doi retraction-viewer--cached-retraction-status)
+      (when-let* ((url (retraction-viewer--format-url doi))
+                  (data (plz 'get url :as #'json-read))
+                  (message (alist-get 'message data))
+                  (updates (cl-map 'list #'identity (alist-get 'cr-labs-updates message)))
+                  (retraction-messages (cl-remove-if-not (lambda (entry)
+                                                           (when-let* ((about (alist-get 'about entry))
+                                                                       (source-url (alist-get 'source_url about)))
+                                                             (string= "https://retractionwatch.com" source-url)))
+                                                         updates)))
+        (puthash doi retraction-messages
+                 retraction-viewer--cached-retraction-status))))
 
 
 (provide 'retraction-viewer)
