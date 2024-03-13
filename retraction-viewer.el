@@ -123,7 +123,31 @@ Note, `retraction-viewer-crossref-email' must be set."
 
 ;; TODO: Implement eldoc provider
 
-;; TODO: Implement sidecar
+(with-eval-after-load 'universal-sidecar
+
+  (defcustom retraction-viewer-sidecar-modes '(bibtex-mode ebib-entry-mode ebib-index-mode)
+    "Which modes should the retraction viewer section be enabled in."
+    :type '(repeat (function :tag "Mode"))
+    :group 'universal-sidecar
+    :group 'retraction-viewer)
+
+  (universal-sidecar-define-section retraction-viewer-section ()
+                                    (:predicate (apply #'derived-mode-p retraction-viewer-sidecar-modes))
+    "Show retraction status of the current bibliographic item."
+    (when-let ((doi (with-current-buffer buffer (retraction-viewer-current-doi)))
+               (retraction-data (retraction-viewer-doi-status doi)))
+      (universal-sidecar-insert-section retraction-viewer-section (format "Retraction Notice for %s:" doi)
+        (insert (universal-sidecar-fontify-as org-mode ((org-fold-core-style 'overlays))
+                  (mapconcat (lambda (entry)
+                               (let-alist entry
+                                 (format " - %s (%s): %s (see also [[%s][%s]])"
+                                         .update-nature
+                                         .update-date
+                                         (mapconcat #'identity .reasons ", ")
+                                         .target-doi
+                                         (substring .target-doi 16))))
+                             retraction-data
+                             "\n")))))))
 
 ;; TODO: Other ways to display?
 
