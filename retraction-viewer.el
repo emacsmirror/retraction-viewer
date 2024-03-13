@@ -174,7 +174,7 @@ Note, `retraction-viewer-crossref-email' must be set."
 ;;; Get current DOI
 
 (defconst retraction-viewer-doi-regexp
-  (rx (group-n 1 (or (and "10." (>= 4 digit) "/" (+ (or ?- ?. ?_ ";" ?( ?) ?/ ?: alnum)))
+  (rx (group-n 1 (or (and "10." (>= 4 digit) "/" (+ (or ?- ?. ?_ ";" ?\( ?\) ?/ ?: alnum)))
                      (and "10.1002/" (+ (not space)) word-boundary))))
   "DOI Regular expression.
 
