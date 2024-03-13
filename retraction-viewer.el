@@ -47,7 +47,8 @@
                  (const :tag "Authentication Disabled (warning will be issued)" nil)))
 
 (defcustom retraction-viewer-doi-functions (list #'retraction-viewer-get-ebib-doi
-                                                 #'retraction-viewer-get-bibtex-doi)
+                                                 #'retraction-viewer-get-bibtex-doi
+                                                 #'retraction-viewer-doi-at-point)
   "How should a DOI be gotten?
 
 This is a list of functions, run until one returns non-nil."
@@ -120,6 +121,19 @@ Note, `retraction-viewer-crossref-email' must be set."
 
 
 ;;; Get current DOI
+
+(defconst retraction-viewer-doi-regexp
+  (rx (group-n 1 (or (and "10." (>= 4 digit) "/" (+ (or ?- ?. ?_ ";" ?( ?) ?/ ?: alnum)))
+                     (and "10.1002/" (+ (not space)) word-boundary))))
+  "DOI Regular expression.
+
+Based on https://www.crossref.org/blog/dois-and-matching-regular-expressions/.")
+
+(defun retraction-viewer-doi-at-point ()
+  "Get DOI at point."
+  (save-match-data
+    (when (looking-at retraction-viewer-doi-regexp)
+      (match-string-no-properties 1))))
 
 (defun retraction-viewer-current-doi ()
   "Get the current DOI, using `retraction-viewer-doi-functions'."

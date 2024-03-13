@@ -30,3 +30,5 @@ TODO
 `retraction-viewer-doi-status`
 
 `retraction-viewer-format-notice`
+
+`retraction-viewer-doi-at-point`
