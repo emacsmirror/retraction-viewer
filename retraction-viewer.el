@@ -49,7 +49,9 @@
 ;;; Utility Functions
 
 (defun retraction-viewer--format-url (doi)
-  "TODO DOI."
+  "Format data URL for DOI.
+
+Note, `retraction-viewer-crossref-email' must be set."
   (if (null retraction-viewer-crossref-email)
       (display-warning 'retraction-viewer "Please set `retraction-viewer-crossref-email' to a string value" :error)
     (format-spec "https://api.labs.crossref.org/works/%d?mailto=%m"
@@ -64,7 +66,7 @@
   "Cached results for retraction viewer.")
 
 (defun retraction-viewer--get-retraction-status (doi)
-  "TODO"
+  "Get the retraction status of DOI."
   (or (gethash doi retraction-viewer--cached-retraction-status)
       (when-let* ((url (retraction-viewer--format-url doi))
                   (data (plz 'get url :as #'json-read))
