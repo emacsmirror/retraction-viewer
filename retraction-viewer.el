@@ -210,11 +210,14 @@ For available keys, see `retraction-viewer-format-spec'."
     (format-spec format format-specs)))
 
 
-;;; Display Methods
+;;; Eldoc Support
 
 ;; TODO: Implement eldoc provider
 ;; add retraction-viewer-eldoc-function to eldoc-documentation-functions buffer-local
 ;; Implement a mode?
+
+
+;;; Universal Sidecar Section
 
 (with-eval-after-load 'universal-sidecar
 
