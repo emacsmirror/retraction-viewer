@@ -96,7 +96,7 @@ Note, `retraction-viewer-crossref-email' must be set."
 
 ;;; Get current DOI
 
-(defun retraction-viewer-get-current-doi ()
+(defun retraction-viewer-current-doi ()
   "Get the current DOI, using `retraction-viewer-doi-functions'."
   (run-hook-with-args-until-success 'retraction-viewer-doi-functions))
 
