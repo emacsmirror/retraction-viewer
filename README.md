@@ -31,6 +31,18 @@ As it is at present using the experimental version of the API keys are subject t
 
 ### Sidecar Section
 
+If the universal sidecar (https://git.sr.ht/~swflint/emacs-universal-sidecar) package is loaded (before or after this package), a sidecar section is made available.
+It can be used, as any other, by adding it to the `universal-sidecar-sections` list, such as shown below.
+
+```elisp
+(add-to-list 'universal-sidecar-sections 'retraction-viewer-section)
+```
+
+There are three options for configuration.
+First is the customizable variable, `retraction-viewer-sidecar-modes`, which specifies the modes in which the sidecar is applicable (its default is bibtex mode and ebib-related modes).
+Second is the notice format string keyword argument, `:format-string`, which is a format string as described above.
+Finally, the bullet character can be modified with the `:prepend-bullet` argument, which should be a valid org-mode bullet (useful for users of `org-bullets` or `org-superstar`).
+
 ### Eldoc Configuration
 
 Forthcoming.
