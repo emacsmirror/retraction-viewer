@@ -60,7 +60,10 @@
 ;; The `retraction-viewer-format-spec' is an alist of (unique)
 ;; characters to either variable names or functions taking a
 ;; retraction notice message.  In either case, they should return a
-;; string, or nil (which will become the empty string).
+;; string, or nil (which will become the empty string).  Retraction
+;; notice data is a direct translation from the JSON output of the
+;; CrossRef REST API.  As it is at present using the experimental
+;; version of the API keys are subject to change.
 ;;
 ;;;;; Sidecar Section
 ;;
