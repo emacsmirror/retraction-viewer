@@ -106,6 +106,8 @@
   :type '(choice (string :tag "Email:")
                  (const :tag "Authentication Disabled (warning will be issued)" nil)))
 
+;; TODO: Add customizable timeouts (connect-timeout and timeout), consider tuning?
+
 (defcustom retraction-viewer-doi-functions (list #'retraction-viewer-get-ebib-doi
                                                  #'retraction-viewer-get-bibtex-doi
                                                  #'retraction-viewer-doi-at-point)
