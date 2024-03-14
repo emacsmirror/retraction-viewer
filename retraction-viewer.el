@@ -78,6 +78,12 @@
 ;; retraction-viewer-current-doi & retraction-viewer-doi-at-point
 ;; retraction-viewer-doi-status
 ;; retraction-viewer-format-notice
+;;
+;;;; Errors and Patches
+;;
+;; If you find an error, or have a patch to improve this package (or
+;; are able to add additional DOI getters), please send an email to
+;; ~swflint/emacs-utilities@lists.sr.ht.
 
 
 

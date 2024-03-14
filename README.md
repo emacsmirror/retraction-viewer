@@ -40,3 +40,7 @@ Forthcoming.
 ## Use as a library
 
 TODO
+
+## Errors and Patches
+
+If you find an error, or have a patch to improve this package (or are able to add additional DOI getters), please send an email to `~swflint/emacs-utilities@lists.sr.ht`.
