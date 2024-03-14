@@ -92,7 +92,7 @@
 ;;;;; DOI Getters
 ;;
 ;; Finally, it's possible to configure how the "current DOI" is
-;; detected using the `retraction-viewer-get-doi-functions' hook. The
+;; detected using the `retraction-viewer-get-doi-functions' hook.  The
 ;; functions are evaluated until one returns non-nil.  By default, it
 ;; will get the DOI from ebib if called in an ebib buffer
 ;; (`retraction-viewer-get-ebib-doi'), from the bibtex entry-at-point
