@@ -347,7 +347,7 @@ For available keys, see `retraction-viewer-format-spec'."
                                     (funcall callback (mapconcat #'retraction-viewer-format-notice retraction-data "\n"))))
     :async-call))
 
-(define-minor-mode retraction-viewer-mode
+(define-minor-mode retraction-viewer-eldoc-mode
   "Show retraction data for the current bibliographic item using `eldoc'."
   :lighter " RV"
   (if retraction-viewer-mode
