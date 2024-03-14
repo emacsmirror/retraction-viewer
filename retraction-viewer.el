@@ -126,9 +126,9 @@
 
 ;; TODO: Add customizable timeouts (connect-timeout and timeout), consider tuning?
 
-(defcustom retraction-viewer-doi-functions (list #'retraction-viewer-get-ebib-doi
-                                                 #'retraction-viewer-get-bibtex-doi
-                                                 #'retraction-viewer-doi-at-point)
+(defcustom retraction-viewer-get-doi-functions (list #'retraction-viewer-get-ebib-doi
+                                                     #'retraction-viewer-get-bibtex-doi
+                                                     #'retraction-viewer-doi-at-point)
   "How should a DOI be gotten?
 
 This is a list of functions, run until one returns non-nil."
@@ -217,7 +217,7 @@ Based on https://www.crossref.org/blog/dois-and-matching-regular-expressions/.")
 
 (defun retraction-viewer-current-doi ()
   "Get the current DOI, using `retraction-viewer-doi-functions'."
-  (run-hook-with-args-until-success 'retraction-viewer-doi-functions))
+  (run-hook-with-args-until-success 'retraction-viewer-get-doi-functions))
 
 (declare-function ebib-get-field-value "ebib-utils.el")
 (declare-function ebib--get-key-at-point "ebib.el")
