@@ -121,6 +121,9 @@
 ;; `retraction-viewer-doi-status', which will return a list of alists
 ;; describing any retraction notices found in the RetractionWatch
 ;; database.  These alists are at present subject to change.
+;; Additionally, a callback, taking the status record can be passed as
+;; an optional second argument; for an example of use, see
+;; `retraction-viewer-eldoc-function'.
 ;;
 ;; Finally, retraction notices can be formatted easily using a
 ;; format-string like construct using
@@ -213,21 +216,31 @@ Note, `retraction-viewer-crossref-email' must be set."
 
 ;;; Get DOI Retraction Status
 
-(defun retraction-viewer-doi-status (doi)
-  "Get the retraction status of DOI."
-  (or (gethash doi retraction-viewer--cached-retraction-status)
-      (when-let* ((url (retraction-viewer--format-url doi))
-                  (data (plz 'get url :as #'json-read))
-                  (message (alist-get 'message data))
-                  ;; TODO: Save and add title as well?
-                  (updates (cl-map 'list #'identity (alist-get 'cr-labs-updates message)))
-                  (retraction-messages (cl-remove-if-not (lambda (entry)
-                                                           (when-let* ((about (alist-get 'about entry))
-                                                                       (source-url (alist-get 'source_url about)))
-                                                             (string= "https://retractionwatch.com" source-url)))
-                                                         updates)))
-        (puthash doi retraction-messages
-                 retraction-viewer--cached-retraction-status))))
+(defun retraction-viewer--process-json (callback doi data)
+  "Process JSON DATA, calling CALLBACK if not nil.
+
+Save data to DOI."
+  (when-let* ((message (alist-get 'message data))
+              (updates (cl-map 'list #'identity (alist-get 'cr-labs-updates message)))
+              (retraction-messages (cl-remove-if-not (lambda (entry)
+                                                       (when-let* ((about (alist-get 'about entry))
+                                                                   (source-url (alist-get 'source_url about)))
+                                                         (string= "https://retractionwatch.com" source-url)))
+                                                     updates)))
+    (funcall (if callback callback #'identity)
+             (puthash doi retraction-messages
+                      retraction-viewer--cached-retraction-status))))
+
+(defun retraction-viewer-doi-status (doi &optional callback)
+  "Get the retraction status of DOI, optionally providing information to CALLBACK."
+  (if-let ((hash-entry (gethash doi retraction-viewer--cached-retraction-status)))
+      (if callback
+          (funcall callback hash-entry)
+        hash-entry)
+    (let ((url (retraction-viewer--format-url doi)))
+      (if callback
+          (plz 'get url :as #'json-read :then (apply-partially #'retraction-viewer--process-json callback doi))
+        (retraction-viewer--process-json nil doi (plz 'get url :as #'json-read))))))
 
 
 ;;; Get current DOI

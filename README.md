@@ -63,6 +63,7 @@ Additionally, the `retraction-viewer-doi-at-point` can be used directly to deter
 
 The retraction status of a DOI can be determined with `retraction-viewer-doi-status`, which will return a list of alists describing any retraction notices found in the RetractionWatch database.
 These alists are at present subject to change.
+Additionally, a callback, taking the status record can be passed as an optional second argument; for an example of use, see `retraction-viewer-eldoc-function`.
 
 Finally, retraction notices can be formatted easily using a format-string like construct using `retraction-viewer-format-notice`, (see above section, "Notice Formatting" for more information).
 
