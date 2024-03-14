@@ -75,7 +75,7 @@
 ;;
 ;;    (add-to-list 'universal-sidecar-sections 'retraction-viewer-section)
 ;;
-;; There are three options for configuration.  First is the
+;; There are three main options for configuration.  First is the
 ;; customizable variable, `retraction-viewer-sidecar-modes', which
 ;; specifies the modes in which the sidecar is applicable (its default
 ;; is bibtex mode and ebib-related modes).  Second is the notice
@@ -84,6 +84,12 @@
 ;; modified with the `:prepend-bullet' argument, which should be a
 ;; valid org-mode bullet (useful for users of `org-bullets' or
 ;; `org-superstar').
+;;
+;; Additionally, there are two variables which can be used to tune
+;; performance: `retraction-viewer-connect-timeout' and
+;; `retraction-viewer-timeout'.  These can either be a number of
+;; seconds, or nil.  If nil, the variables `plz-connect-timeout' and
+;; `plz-timeout', respectively are used to provide the values.
 ;;
 ;;;;; Eldoc Configuration
 ;;
