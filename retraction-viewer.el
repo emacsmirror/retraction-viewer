@@ -105,9 +105,27 @@
 ;;
 ;;;; Use as a Library
 ;;
-;; retraction-viewer-current-doi & retraction-viewer-doi-at-point
-;; retraction-viewer-doi-status
-;; retraction-viewer-format-notice
+;; Additionally, `retraction-viewer' is intended to be a way for other
+;; packages to get retraction information and related data easily.  To
+;; this end, there are three categories of functions it provides: DOI
+;; detection, retraction status, and notice formatting.
+;;
+;; DOIs can be detected using `retraction-viewer-current-doi' to
+;; determine if there is a DOI in the current context (whatever that
+;; may be given mode, etc.), for more information about how this can
+;; be extended, see above.  Additionally, the
+;; `retraction-viewer-doi-at-point' can be used directly to determine
+;; if there is a DOI at point (using `retraction-viewer-doi-regexp').
+;;
+;; The retraction status of a DOI can be determined with
+;; `retraction-viewer-doi-status', which will return a list of alists
+;; describing any retraction notices found in the RetractionWatch
+;; database.  These alists are at present subject to change.
+;;
+;; Finally, retraction notices can be formatted easily using a
+;; format-string like construct using
+;; `retraction-viewer-format-notice', (see above section, "Notice
+;; Formatting" for more information).
 ;;
 ;;;; Errors and Patches
 ;;
