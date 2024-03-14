@@ -34,7 +34,7 @@ As it is at present using the experimental version of the API keys are subject t
 If the universal sidecar (https://git.sr.ht/~swflint/emacs-universal-sidecar) package is loaded (before or after this package), a sidecar section is made available.
 It can be used, as any other, by adding it to the `universal-sidecar-sections` list, such as shown below.
 
-```emacs-lisp
+```elisp
 (add-to-list 'universal-sidecar-sections 'retraction-viewer-section)
 ```
 
