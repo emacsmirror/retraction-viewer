@@ -62,7 +62,7 @@
 ;; retraction notice message.  In either case, they should return a
 ;; string, or nil (which will become the empty string).
 ;;
-;;;;; Sidecar Sections
+;;;;; Sidecar Section
 ;;
 ;;;;; Eldoc Configuration
 ;;
