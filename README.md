@@ -45,7 +45,9 @@ Finally, the bullet character can be modified with the `:prepend-bullet` argumen
 
 ### Eldoc Configuration
 
-Forthcoming.
+Retraction notices can also be showed using `eldoc`, by enabling both `eldoc-mode` and `retraction-viewer-eldoc-mode`.
+Note, this operates asynchronously, and will format notices using `retraction-viewer-notice-format`.
+Additionally, collecting retraction data is subject to collecting a DOI (see `retraction-viewer-get-doi-functions` described below).
 
 ### DOI getters
 
