@@ -211,9 +211,10 @@ Based on https://www.crossref.org/blog/dois-and-matching-regular-expressions/.")
 
 (defun retraction-viewer-doi-at-point ()
   "Get DOI at point."
-  (save-match-data
-    (when (looking-at retraction-viewer-doi-regexp)
-      (match-string-no-properties 1))))
+  (save-excursion
+    (save-match-data
+      (when (looking-at retraction-viewer-doi-regexp)
+        (match-string-no-properties 1)))))
 
 (defun retraction-viewer-current-doi ()
   "Get the current DOI, using `retraction-viewer-doi-functions'."
@@ -231,7 +232,9 @@ Based on https://www.crossref.org/blog/dois-and-matching-regular-expressions/.")
 (defun retraction-viewer-get-bibtex-doi ()
   "Get DOI from current BibTeX entry."
   (when (derived-mode-p 'bibtex-mode)
-    (bibtex-text-in-field "doi")))
+    (save-excursion
+      (save-match-data
+        (bibtex-text-in-field "doi")))))
 
 ;; TODO: Get based on current citation in LaTeX?
 
