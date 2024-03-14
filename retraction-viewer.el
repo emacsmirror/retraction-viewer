@@ -340,11 +340,12 @@ For available keys, see `retraction-viewer-format-spec'."
 ;;; Eldoc Support
 
 (defun retraction-viewer-eldoc-function (callback)
-  "Call CALLBACK if there is a retraction notice for the current bibliographic item."
-  ;; FIXME: Run this asynchronously
-  (when-let ((doi (retraction-viewer-current-doi))
-             (retraction-data (retraction-viewer-doi-status doi)))
-    (funcall callback (mapconcat #'retraction-viewer-format-notice retraction-data "\n"))))
+  "Call CALLBACK if there is a retraction notice for the current DOI."
+  (when-let ((doi (retraction-viewer-current-doi)))
+    (retraction-viewer-doi-status doi
+                                  (lambda (retraction-data)
+                                    (funcall callback (mapconcat #'retraction-viewer-format-notice retraction-data "\n"))))
+    :async-call))
 
 (define-minor-mode retraction-viewer-mode
   "Show retraction data for the current bibliographic item using `eldoc'."
