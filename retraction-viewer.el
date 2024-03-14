@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Samuel W. Flint
 
 ;; Author: Samuel W. Flint <me@samuelwflint.com>
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Package-Requires: ((emacs "26.1") (plz "0.7"))
 ;; Keywords: bib, tex, data
 ;; URL: https://git.sr.ht/~swflint/retraction-viewer
@@ -382,7 +382,7 @@ For available keys, see `retraction-viewer-format-spec'."
 (define-minor-mode retraction-viewer-eldoc-mode
   "Show retraction data for the current bibliographic item using `eldoc'."
   :lighter " RV"
-  (if retraction-viewer-mode
+  (if retraction-viewer-eldoc-mode
       (add-hook 'eldoc-documentation-functions #'retraction-viewer-eldoc-function :anywhere :local)
     (remove-hook 'eldoc-documentation-functions #'retraction-viewer-eldoc-function :local)))
 
