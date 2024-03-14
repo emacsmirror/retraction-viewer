@@ -326,9 +326,17 @@ For available keys, see `retraction-viewer-format-spec'."
 
 ;;; Eldoc Support
 
-;; TODO: Implement eldoc provider
-;; add retraction-viewer-eldoc-function to eldoc-documentation-functions buffer-local
-;; Implement a mode?
+(defun retraction-viewer-eldoc-function (callback)
+  "Call CALLBACK if there is a retraction notice for the current bibliographic item."
+  ;; TODO: implement following `eldoc-documentation-functions'
+  nil)
+
+(define-minor-mode retraction-viewer-mode
+  "Show retraction data for the current bibliographic item using `eldoc'."
+  :lighter " RV"
+  (if retraction-viewer-mode
+      (add-hook 'eldoc-documentation-functions #'retraction-viewer-eldoc-function :anywhere :local)
+    (remove-hook 'eldoc-documentation-functions #'retraction-viewer-eldoc-function :local)))
 
 
 ;;; Universal Sidecar Section
