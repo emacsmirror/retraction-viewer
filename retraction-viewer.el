@@ -162,7 +162,21 @@
   :type '(choice (string :tag "Email:")
                  (const :tag "Authentication Disabled (warning will be issued)" nil)))
 
-;; TODO: Add customizable timeouts (connect-timeout and timeout), consider tuning?
+(defcustom retraction-viewer-connect-timeout nil
+  "How long to wait for a connection?
+
+If nil, use `plz-connect-timeout'."
+  :group 'retraction-viewer
+  :type '(choice (const :tag "Default, `plz-connect-timeout'." nil)
+                 (natnum :tag "Custom Timeout (seconds)" 60)))
+
+(defcustom retraction-viewer-timeout nil
+  "How long to wait for a response?
+
+If nil, use `plz-timeout'."
+  :group 'retraction-viewer
+  :type '(choice (const :tag "Default, `plz-timeout'." nil)
+                 (natnum :tag "Custom Timeout (seconds)" 60)))
 
 (defcustom retraction-viewer-get-doi-functions (list #'retraction-viewer-get-ebib-doi
                                                      #'retraction-viewer-get-bibtex-doi
@@ -244,8 +258,15 @@ Save data to DOI."
         hash-entry)
     (let ((url (retraction-viewer--format-url doi)))
       (if callback
-          (plz 'get url :as #'json-read :then (apply-partially #'retraction-viewer--process-json callback doi))
-        (retraction-viewer--process-json nil doi (plz 'get url :as #'json-read))))))
+          (plz 'get url
+            :as #'json-read
+            :then (apply-partially #'retraction-viewer--process-json callback doi)
+            :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
+            :timeout (or retraction-viewer-timeout plz-timeout))
+        (retraction-viewer--process-json nil doi (plz 'get url
+                                                   :as #'json-read
+                                                   :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
+                                                   :timeout (or retraction-viewer-timeout plz-timeout)))))))
 
 
 ;;; Get current DOI
