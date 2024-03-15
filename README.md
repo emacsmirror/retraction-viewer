@@ -12,7 +12,7 @@ It is possible show retraction information as a [Universal Sidecar Section](http
 ## Configuration
 
 For general use, there is one major variable that must be customized.
-`retraction-viewer-crossref-email` should be set to your email address (or an email address that will be checked, see https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service).
+`retraction-viewer-crossref-email` should be set to your email address (or an email address that will be checked, see [https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service](https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service)).
 In particular, it may be helpful to set it to `user-mail-address`, as follows.
 
 ```elisp
@@ -31,7 +31,7 @@ As it is at present using the experimental version of the API keys are subject t
 
 ### Sidecar Section
 
-If the universal sidecar (https://git.sr.ht/~swflint/emacs-universal-sidecar) package is loaded (before or after this package), a sidecar section is made available.
+If the [universal sidecar](https://git.sr.ht/~swflint/emacs-universal-sidecar) package is loaded (before or after this package), a sidecar section is made available.
 It can be used, as any other, by adding it to the `universal-sidecar-sections` list, such as shown below.
 
 ```elisp
