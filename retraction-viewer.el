@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Samuel W. Flint
 
 ;; Author: Samuel W. Flint <me@samuelwflint.com>
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Package-Requires: ((emacs "26.1") (plz "0.7"))
 ;; Keywords: bib, tex, data
 ;; URL: https://git.sr.ht/~swflint/retraction-viewer
@@ -151,6 +151,8 @@
 
 ;;; Code:
 (require 'plz)
+(require 'json)
+(require 'bibtex)
 
 
 ;;; Customization
