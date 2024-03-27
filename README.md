@@ -7,7 +7,7 @@ This Emacs package provides a way to show retraction information for citations a
 This is done using the [Crossref REST API](https://www.crossref.org/documentation/retrieve-metadata/rest-api/) (experimental version until the feature is available on the regular version).
 At the moment, it explicitly supports detection of DOI from [ebib](http://joostkremers.github.io/ebib/) as well as `bibtex-mode`.
 
-It is possible show retraction information as a [Universal Sidecar Section](https://git.sr.ht/~swflint/emacs-universal-sidecar), and support for `eldoc` is forthcoming.
+It is possible show retraction information as a [Universal Sidecar Section](https://git.sr.ht/~swflint/emacs-universal-sidecar), as well as through `eldoc`.
 
 ## Configuration
 
@@ -29,19 +29,7 @@ In either case, they should return a string, or nil (which will become the empty
 Retraction notice data is a direct translation from the JSON output of the CrossRef REST API.
 As it is at present using the experimental version of the API keys are subject to change.
 
-### Sidecar Section
-
-If the [universal sidecar](https://git.sr.ht/~swflint/emacs-universal-sidecar) package is loaded (before or after this package), a sidecar section is made available.
-It can be used, as any other, by adding it to the `universal-sidecar-sections` list, such as shown below.
-
-```elisp
-(add-to-list 'universal-sidecar-sections 'retraction-viewer-section)
-```
-
-There are three main options for configuration.
-First is the customizable variable, `retraction-viewer-sidecar-modes`, which specifies the modes in which the sidecar is applicable (its default is bibtex mode and ebib-related modes).
-Second is the notice format string keyword argument, `:format-string`, which is a format string as described above.
-Finally, the bullet character can be modified with the `:prepend-bullet` argument, which should be a valid org-mode bullet (useful for users of `org-bullets` or `org-superstar`).
+### Performance Tuning
 
 Additionally, there are two variables which can be used to tune performance: `retraction-viewer-connect-timeout` and `retraction-viewer-timeout`.
 These can either be a number of seconds, or nil.
@@ -72,6 +60,20 @@ These alists are at present subject to change.
 Additionally, a callback, taking the status record can be passed as an optional second argument; for an example of use, see `retraction-viewer-eldoc-function`.
 
 Finally, retraction notices can be formatted easily using a format-string like construct using `retraction-viewer-format-notice`, (see above section, "Notice Formatting" for more information).
+
+## Sidecar Section
+
+Retraction data from `retraction-viewer` may be shown in the [`universal-sidecar`](https://git.sr.ht/~swflint/emacs-universal-sidecar) as follows.
+
+```elisp
+(require 'retraction-viewer-section)
+(add-to-list 'universal-sidecar-sections 'retraction-viewer-section)
+```
+
+There are three main options for configuration.
+First is the customizable variable, `retraction-viewer-sidecar-modes` which specifies the modes in which the sidecar is applicable (its default is bibtex mode and ebib-related modes).
+Second is the notice format string keyword argument, `:format-string`, which is a format string as described above.
+Finally, the bullet character can be modified with the `:prepend-bullet'`argument, which should be a valid org-mode bullet (useful for users of `org-bullets` or `org-superstar`).
 
 ## Errors and Patches
 
