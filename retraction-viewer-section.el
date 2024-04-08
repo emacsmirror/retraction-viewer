@@ -4,7 +4,7 @@
 
 ;; Author: Samuel W. Flint <me@samuelwflint.com>
 ;; Version: 1.0.0
-;; Package-Requires: ((retraction-viewer "1.0.2") (universal-sidecar "1.5.1"))
+;; Package-Requires: ((emacs "25.1") (retraction-viewer "1.0.2") (universal-sidecar "1.5.1"))
 ;; Keywords: bib, tex
 ;; URL: https://git.sr.ht/~swflint/retraction-viewer
 ;; SPDX-License-Identifier: GPL-3.0-or-later
