@@ -33,7 +33,7 @@
 ;;     (add-to-list 'universal-sidecar-sections 'retraction-viewer-section)
 ;;
 ;; There are three main options for configuration.  First is the
-;; customizable variable, `retraction-viewer-sidecar-modes', which
+;; customizable variable, `retraction-viewer-section-modes', which
 ;; specifies the modes in which the sidecar is applicable (its default
 ;; is bibtex mode and ebib-related modes).  Second is the notice
 ;; format string keyword argument, `:format-string', which is a format
@@ -51,7 +51,7 @@
 
 ;; Customization
 
-(defcustom retraction-viewer-sidecar-modes '(bibtex-mode ebib-entry-mode ebib-index-mode)
+(defcustom retraction-viewer-section-modes '(bibtex-mode ebib-entry-mode ebib-index-mode)
   "Which modes should the retraction viewer section be enabled in?"
   :type '(repeat (function :tag "Mode"))
   :group 'universal-sidecar
@@ -62,7 +62,7 @@
 
 (universal-sidecar-define-section retraction-viewer-section ((format-string retraction-viewer-notice-format)
                                                              (prepend-bullet ?-))
-                                  (:predicate (apply #'derived-mode-p retraction-viewer-sidecar-modes))
+                                  (:predicate (apply #'derived-mode-p retraction-viewer-section-modes))
   "Show retraction status of the current bibliographic item.
 
 The bullet prepended to each notice message is specified by

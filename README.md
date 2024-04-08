@@ -61,7 +61,7 @@ Additionally, a callback, taking the status record can be passed as an optional 
 
 Finally, retraction notices can be formatted easily using a format-string like construct using `retraction-viewer-format-notice`, (see above section, "Notice Formatting" for more information).
 
-## Sidecar Section
+## Sidecar Section [![Not On MELPA Yet](https://melpa.org/packages/retraction-viewer-section-badge.svg)](https://melpa.org/#/retraction-viewer-section)
 
 Retraction data from `retraction-viewer` may be shown in the [`universal-sidecar`](https://git.sr.ht/~swflint/emacs-universal-sidecar) as follows.
 
@@ -71,7 +71,7 @@ Retraction data from `retraction-viewer` may be shown in the [`universal-sidecar
 ```
 
 There are three main options for configuration.
-First is the customizable variable, `retraction-viewer-sidecar-modes` which specifies the modes in which the sidecar is applicable (its default is bibtex mode and ebib-related modes).
+First is the customizable variable, `retraction-viewer-section-modes` which specifies the modes in which the sidecar is applicable (its default is bibtex mode and ebib-related modes).
 Second is the notice format string keyword argument, `:format-string`, which is a format string as described above.
 Finally, the bullet character can be modified with the `:prepend-bullet'`argument, which should be a valid org-mode bullet (useful for users of `org-bullets` or `org-superstar`).
 
