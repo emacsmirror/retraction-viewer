@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Samuel W. Flint
 
 ;; Author: Samuel W. Flint <me@samuelwflint.com>
-;; Version: 1.0.2
+;; Version: 1.0.3
 ;; Package-Requires: ((emacs "26.1") (plz "0.7"))
 ;; Keywords: bib, tex, data
 ;; URL: https://git.sr.ht/~swflint/retraction-viewer
@@ -252,11 +252,13 @@ Save data to DOI."
             :as #'json-read
             :then (apply-partially #'retraction-viewer--process-json callback doi)
             :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
-            :timeout (or retraction-viewer-timeout plz-timeout))
+            :timeout (or retraction-viewer-timeout plz-timeout)
+            :noquery t)
         (retraction-viewer--process-json nil doi (plz 'get url
                                                    :as #'json-read
                                                    :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
-                                                   :timeout (or retraction-viewer-timeout plz-timeout)))))))
+                                                   :timeout (or retraction-viewer-timeout plz-timeout)
+                                                   :noquery t))))))
 
 
 ;;; Get current DOI
