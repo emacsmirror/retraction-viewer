@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Samuel W. Flint
 
 ;; Author: Samuel W. Flint <me@samuelwflint.com>
-;; Version: 1.0.3
+;; Version: 1.0.4
 ;; Package-Requires: ((emacs "26.1") (plz "0.7"))
 ;; Keywords: bib, tex, data
 ;; URL: https://git.sr.ht/~swflint/retraction-viewer
@@ -246,19 +246,22 @@ Save data to DOI."
       (if callback
           (funcall callback hash-entry)
         hash-entry)
-    (let ((url (retraction-viewer--format-url doi)))
-      (if callback
-          (plz 'get url
-            :as #'json-read
-            :then (apply-partially #'retraction-viewer--process-json callback doi)
-            :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
-            :timeout (or retraction-viewer-timeout plz-timeout)
-            :noquery t)
-        (retraction-viewer--process-json nil doi (plz 'get url
-                                                   :as #'json-read
-                                                   :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
-                                                   :timeout (or retraction-viewer-timeout plz-timeout)
-                                                   :noquery t))))))
+    (let ((url (retraction-viewer--format-url doi))
+          (kill-buffer-hook nil))
+      (condition-case err
+          (if callback
+              (plz 'get url
+                :as #'json-read
+                :then (apply-partially #'retraction-viewer--process-json callback doi)
+                :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
+                :timeout (or retraction-viewer-timeout plz-timeout)
+                :noquery t)
+            (retraction-viewer--process-json nil doi (plz 'get url
+                                                       :as #'json-read
+                                                       :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
+                                                       :timeout (or retraction-viewer-timeout plz-timeout)
+                                                       :noquery t)))
+        (_ nil)))))
 
 
 ;;; Get current DOI
