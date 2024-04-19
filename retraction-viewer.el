@@ -253,6 +253,7 @@ Save data to DOI."
               (plz 'get url
                 :as #'json-read
                 :then (apply-partially #'retraction-viewer--process-json callback doi)
+                :else #'ignore
                 :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
                 :timeout (or retraction-viewer-timeout plz-timeout)
                 :noquery t)
