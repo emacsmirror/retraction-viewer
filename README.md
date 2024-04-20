@@ -1,7 +1,7 @@
-[![REUSE status](https://api.reuse.software/badge/git.sr.ht/~swflint/retraction-viewer)](https://api.reuse.software/info/git.sr.ht/~swflint/retraction-viewer)
-[![Not On MELPA Yet](https://melpa.org/packages/retraction-viewer-badge.svg)](https://melpa.org/#/retraction-viewer)
+![Logo](images/logo.png)
 
-# Retraction Viewer
+# Retraction Viewer [![Not On MELPA Yet](https://melpa.org/packages/retraction-viewer-badge.svg)](https://melpa.org/#/retraction-viewer) [![REUSE status](https://api.reuse.software/badge/git.sr.ht/~swflint/retraction-viewer)](https://api.reuse.software/info/git.sr.ht/~swflint/retraction-viewer)
+
 
 This Emacs package provides a way to show retraction information for citations and citation data at point.
 This is done using the [Crossref REST API](https://www.crossref.org/documentation/retrieve-metadata/rest-api/) (experimental version until the feature is available on the regular version).
