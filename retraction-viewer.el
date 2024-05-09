@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Samuel W. Flint
 
 ;; Author: Samuel W. Flint <me@samuelwflint.com>
-;; Version: 1.0.5
+;; Version: 1.0.6
 ;; Package-Requires: ((emacs "26.1") (plz "0.7"))
 ;; Keywords: bib, tex, data
 ;; URL: https://git.sr.ht/~swflint/retraction-viewer
@@ -89,12 +89,13 @@
 ;; functions are evaluated until one returns non-nil.  By default, it
 ;; will get the DOI from ebib if called in an ebib buffer
 ;; (`retraction-viewer-get-ebib-doi'), from the bibtex entry-at-point
-;; if within a bibtex buffer (`retraction-viewer-get-bibtex-doi'), or
-;; if point is on a DOI (see `retraction-viewer-doi-regexp').
-;; Additional functions can be written to select a current DOI, and
-;; should operate by: a) not adjusting match data; b) not adjust
-;; point/mark; c) not adjust narrowing, and d) fail early (i.e.,
-;; return nil ASAP).
+;; if within a bibtex buffer (`retraction-viewer-get-bibtex-doi'),
+;; from the currently shown elfeed entry if in an `elfeed-show' buffer
+;; (`retraction-viewer-get-elfeed-doi'), or if point is on a DOI (see
+;; `retraction-viewer-doi-regexp').  Additional functions can be
+;; written to select a current DOI, and should operate by: a) not
+;; adjusting match data; b) not adjust point/mark; c) not adjust
+;; narrowing, and d) fail early (i.e., return nil ASAP).
 ;;
 ;;;; Use as a Library
 ;;
@@ -170,6 +171,7 @@ If nil, use `plz-timeout'."
 
 (defcustom retraction-viewer-get-doi-functions (list #'retraction-viewer-get-ebib-doi
                                                      #'retraction-viewer-get-bibtex-doi
+                                                     #'retraction-viewer-get-elfeed-doi
                                                      #'retraction-viewer-doi-at-point)
   "How should a DOI be gotten?
 
@@ -293,6 +295,16 @@ Based on https://www.crossref.org/blog/dois-and-matching-regular-expressions/.")
   (when (and (featurep 'ebib)
              (derived-mode-p 'ebib-entry-mode 'ebib-index-mode))
     (ebib-get-field-value "doi" (ebib--get-key-at-point) ebib--cur-db 'noerror 'unbraced)))
+
+(declare-function elfeed-show-entry "elfeed-show.el")
+(defvar elfeed-show-entry)
+(defun retraction-viewer-get-elfeed-doi ()
+  "Get DOI from current elfeed entry."
+  (when (and (featurep 'elfeed)
+             (derived-mode-p 'elfeed-show-mode))
+    (when-let ((url (elfeed-entry-link elfeed-show-entry))
+               (matchp (string-match retraction-viewer-doi-regexp url)))
+      (match-string 1 url))))
 
 (defun retraction-viewer-get-bibtex-doi ()
   "Get DOI from current BibTeX entry."
