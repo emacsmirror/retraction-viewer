@@ -3,8 +3,8 @@
 ;; Copyright (C) 2024  Samuel W. Flint
 
 ;; Author: Samuel W. Flint <me@samuelwflint.com>
-;; Version: 1.0.6
-;; Package-Requires: ((emacs "26.1") (plz "0.7"))
+;; Version: 2.0.0
+;; Package-Requires: ((emacs "27.1") (plz "0.9.1"))
 ;; Keywords: bib, tex, data
 ;; URL: https://git.sr.ht/~swflint/retraction-viewer
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -28,11 +28,9 @@
 ;; This Emacs package provides a way to show retraction information
 ;; for citations and citation data at point.  This is done using the
 ;; Crossref REST API
-;; (https://www.crossref.org/documentation/retrieve-metadata/rest-api/)
-;; (experimental version until the feature is available on the regular
-;; version).  At the moment, it explicitly supports detection of DOI
-;; from `ebib' (http://joostkremers.github.io/ebib/) as well as
-;; `bibtex-mode'.
+;; (https://www.crossref.org/documentation/retrieve-metadata/rest-api/).
+;; At the moment, it explicitly supports detection of DOI from `ebib'
+;; (http://joostkremers.github.io/ebib/) as well as `bibtex-mode'.
 ;;
 ;; It is possible to show retraction information as a Universal
 ;; Sidecar Section
@@ -64,14 +62,6 @@
 ;; notice data is a direct translation from the JSON output of the
 ;; CrossRef REST API.  As it is at present using the experimental
 ;; version of the API keys are subject to change.
-;;
-;;;;; Performance Tuning
-;;
-;; Additionally, there are two variables which can be used to tune
-;; performance: `retraction-viewer-connect-timeout' and
-;; `retraction-viewer-timeout'.  These can either be a number of
-;; seconds, or nil.  If nil, the variables `plz-connect-timeout' and
-;; `plz-timeout', respectively are used to provide the values.
 ;;
 ;;;;; Eldoc Configuration
 ;;
@@ -134,6 +124,7 @@
 
 ;;; Code:
 (require 'plz)
+(require 'iso8601)
 (require 'json)
 (require 'bibtex)
 
@@ -153,22 +144,6 @@
   :type '(choice (string :tag "Email:")
                  (const :tag "Authentication Disabled (warning will be issued)" nil)))
 
-(defcustom retraction-viewer-connect-timeout nil
-  "How long to wait for a connection?
-
-If nil, use `plz-connect-timeout'."
-  :group 'retraction-viewer
-  :type '(choice (const :tag "Default, `plz-connect-timeout'." nil)
-                 (natnum :tag "Custom Timeout (seconds)" 60)))
-
-(defcustom retraction-viewer-timeout nil
-  "How long to wait for a response?
-
-If nil, use `plz-timeout'."
-  :group 'retraction-viewer
-  :type '(choice (const :tag "Default, `plz-timeout'." nil)
-                 (natnum :tag "Custom Timeout (seconds)" 60)))
-
 (defcustom retraction-viewer-get-doi-functions (list #'retraction-viewer-get-ebib-doi
                                                      #'retraction-viewer-get-bibtex-doi
                                                      #'retraction-viewer-get-elfeed-doi
@@ -180,14 +155,13 @@ This is a list of functions, run until one returns non-nil."
   :type 'hook)
 
 (defcustom retraction-viewer-format-spec
-  '((?n . retraction-viewer--format-update-nature)
-    (?d . retraction-viewer--format-update-date)
-    (?r . retraction-viewer--format-reasons)
-    (?u . retraction-viewer--format-target-doi)
+  '((?d . retraction-viewer--format-date)
+    (?L . retraction-viewer--format-date-local)
+    (?t . retraction-viewer--format-type)
+    (?s . retraction-viewer--format-source)
+    (?l . retraction-viewer--format-label)
     (?D . retraction-viewer--format-doi)
-    (?U . retraction-viewer--format-urls)
-    (?N . retraction-viewer--format-notes)
-    (?a . retraction-viewer--format-asserted-by))
+    (?U . retraction-viewer--format-notice-url))
   "Metacharacters for formatting retraction notices.
 
 Keys should be unique characters, and values should be either
@@ -197,10 +171,17 @@ argument, the retraction notice data structure (alist)."
   :type '(alist :key-type (character :tag "Format Character")
                 :value-type (sexp :tag "Getter")))
 
-(defcustom retraction-viewer-notice-format "%n (%d): %r (see also [[%u][%D]])."
+(defcustom retraction-viewer-notice-format "%l (%L): %s (see also [[%U][%D]])."
   "Default format for retraction notices.
 
 See also `retraction-viewer-format-spec' for available keys."
+  :group 'retraction-viewer
+  :type 'string)
+
+(defcustom retraction-viewer-date-format "%d %B %Y, %H:%M"
+  "Format for showing dates.
+
+See `format-time-string'."
   :group 'retraction-viewer
   :type 'string)
 
@@ -213,7 +194,7 @@ See also `retraction-viewer-format-spec' for available keys."
 Note, `retraction-viewer-crossref-email' must be set."
   (if (null retraction-viewer-crossref-email)
       (display-warning 'retraction-viewer "Please set `retraction-viewer-crossref-email' to a string value" :error)
-    (format-spec "https://api.labs.crossref.org/works/%d?mailto=%m"
+    (format-spec "https://api.crossref.org/works/%d?mailto=%m"
                  `((?d . ,doi)
                    (?m . ,retraction-viewer-crossref-email)))))
 
@@ -227,43 +208,46 @@ Note, `retraction-viewer-crossref-email' must be set."
 
 ;;; Get DOI Retraction Status
 
+(defconst retraction-viewer--applicable-message-types
+  (list "expression_of_concern"
+        "retraction"))
+
 (defun retraction-viewer--process-json (callback doi data)
   "Process JSON DATA, calling CALLBACK if not nil.
 
 Save data to DOI."
   (when-let* ((message (alist-get 'message data))
-              (updates (cl-map 'list #'identity (alist-get 'cr-labs-updates message)))
+              (updates (cl-map 'list #'identity (alist-get 'updated-by message)))
               (retraction-messages (cl-remove-if-not (lambda (entry)
-                                                       (when-let* ((about (alist-get 'about entry))
-                                                                   (source-url (alist-get 'source_url about)))
-                                                         (string= "https://retractionwatch.com" source-url)))
+                                                       (cl-member (alist-get 'type entry)
+                                                                  retraction-viewer--applicable-message-types
+                                                                  :test #'string=))
                                                      updates)))
+    (message "%S" retraction-messages)
     (funcall (if callback callback #'identity)
              (puthash doi retraction-messages
                       retraction-viewer--cached-retraction-status))))
 
 (defun retraction-viewer-doi-status (doi &optional callback)
   "Get the retraction status of DOI, optionally providing information to CALLBACK."
+
   (if-let ((hash-entry (gethash doi retraction-viewer--cached-retraction-status)))
       (if callback
           (funcall callback hash-entry)
         hash-entry)
     (let ((url (retraction-viewer--format-url doi))
           (kill-buffer-hook nil))
-      (condition-case err
+      (condition-case-unless-debug err
           (if callback
               (plz 'get url
                 :as #'json-read
                 :then (apply-partially #'retraction-viewer--process-json callback doi)
                 :else #'ignore
-                :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
-                :timeout (or retraction-viewer-timeout plz-timeout)
                 :noquery t)
-            (retraction-viewer--process-json nil doi (plz 'get url
-                                                       :as #'json-read
-                                                       :connect-timeout (or retraction-viewer-connect-timeout plz-connect-timeout)
-                                                       :timeout (or retraction-viewer-timeout plz-timeout)
-                                                       :noquery t)))
+            (let ((data (plz 'get url
+                          :as #'json-read
+                          :noquery t)))
+              (retraction-viewer--process-json nil doi data)))
         (t nil)))))
 
 
@@ -320,37 +304,45 @@ Based on https://www.crossref.org/blog/dois-and-matching-regular-expressions/.")
 
 ;;; Formatting Retraction Notices
 
-(defun retraction-viewer--format-update-nature (notice)
-  "Get update-nature from NOTICE."
-  (alist-get 'update-nature notice))
+;; type
+;; label
+;; source
+;; update DOI (DOI)
+;; Updated Time (updated.timestamp)
 
-(defun retraction-viewer--format-update-date (notice)
-  "Get update-date from NOTICE."
-  (alist-get 'update-date notice))
+(defun retraction-viewer--format-date (notice)
+  "Get date from NOTICE."
+  (alist-get 'date-time (alist-get 'updated notice)))
 
-(defun retraction-viewer--format-target-doi (notice)
-  "Get target-doi from NOTICE."
-  (alist-get 'target-doi notice))
+(defun retraction-viewer--format-date-local (notice)
+  "Get and format date/time from NOTICE.
 
-(defun retraction-viewer--format-notes (notice)
-  "Get notes from NOTICE."
-  (alist-get 'notes notice))
+See also `retraction-viewer-date-format'"
+  (format-time-string retraction-viewer-date-format
+                      (encode-time
+                       (iso8601-parse
+                        (alist-get 'date-time
+                                   (alist-get 'updated notice))))))
 
-(defun retraction-viewer--format-asserted-by (notice)
-  "Get asserted-by from NOTICE."
-  (alist-get 'asserted-by notice))
+(defun retraction-viewer--format-type (notice)
+  "Get notice type from NOTICE."
+  (alist-get 'type notice))
 
-(defun retraction-viewer--format-reasons (notice)
-  "Get reasons from NOTICE."
-  (mapconcat #'identity (alist-get 'reasons notice) ", "))
+(defun retraction-viewer--format-label (notice)
+  "Get label from NOTICE."
+  (alist-get 'label notice))
 
-(defun retraction-viewer--format-urls (notice)
-  "Get urls from NOTICE."
-  (mapconcat #'identity (alist-get 'urls notice) ", "))
+(defun retraction-viewer--format-source (notice)
+  "Get source from NOTICE."
+  (alist-get 'source notice))
 
 (defun retraction-viewer--format-doi (notice)
   "Get DOI from NOTICE."
-  (substring (alist-get 'target-doi notice) 16))
+  (alist-get 'DOI notice))
+
+(defun retraction-viewer--format-notice-url (notice)
+  "Get DOI as URL from NOTICE."
+  (format "https://doi.org/%s" (alist-get 'DOI notice)))
 
 (defun retraction-viewer-format-notice (notice &optional format)
   "Format retraction NOTICE data based on FORMAT.
@@ -369,6 +361,14 @@ For available keys, see `retraction-viewer-format-spec'."
                                                    (string-match-p (format "%%%c" (car spec)) format))
                                                  retraction-viewer-format-spec))))
     (format-spec format format-specs)))
+
+(defun retraction-viewer-format-notices (notices &optional format)
+  "Format retraction NOTICES data based on FORMAT.
+
+See also `retraction-viewer-format-notice'."
+  (string-join (mapcar (lambda (notice) (retraction-viewer-format-notice notice format))
+                       notices)
+               "\n"))
 
 
 ;;; Eldoc Support

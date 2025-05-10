@@ -4,7 +4,7 @@
 
 
 This Emacs package provides a way to show retraction information for citations and citation data at point.
-This is done using the [Crossref REST API](https://www.crossref.org/documentation/retrieve-metadata/rest-api/) (experimental version until the feature is available on the regular version).
+This is done using the [Crossref REST API](https://www.crossref.org/documentation/retrieve-metadata/rest-api/).
 At the moment, it explicitly supports detection of DOI from [ebib](http://joostkremers.github.io/ebib/) as well as `bibtex-mode`.
 
 It is possible show retraction information as a [Universal Sidecar Section](https://git.sr.ht/~swflint/emacs-universal-sidecar), as well as through `eldoc`.
@@ -28,12 +28,6 @@ The `retraction-viewer-format-spec` is an alist of (unique) characters to either
 In either case, they should return a string, or nil (which will become the empty string).
 Retraction notice data is a direct translation from the JSON output of the CrossRef REST API.
 As it is at present using the experimental version of the API keys are subject to change.
-
-### Performance Tuning
-
-Additionally, there are two variables which can be used to tune performance: `retraction-viewer-connect-timeout` and `retraction-viewer-timeout`.
-These can either be a number of seconds, or nil.
-If nil, the variables `plz-connect-timeout` and `plz-timeout`, respectively are used to provide the values.
 
 ### Eldoc Configuration
 
