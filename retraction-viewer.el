@@ -210,7 +210,8 @@ Note, `retraction-viewer-crossref-email' must be set."
 
 (defconst retraction-viewer--applicable-message-types
   (list "expression_of_concern"
-        "retraction"))
+        "retraction"
+        "correction"))
 
 (defun retraction-viewer--process-json (callback doi data)
   "Process JSON DATA, calling CALLBACK if not nil.
